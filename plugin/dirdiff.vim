@@ -22,30 +22,26 @@ command! -nargs=0 DirDiffQuit call <SID>DirDiffQuit ()
 " \dk - Diff previous: (think k for up)
 
 if !exists("g:DirDiffEnableMappings")
-    let g:DirDiffEnableMappings = 1
+    let g:DirDiffEnableMappings = 0
 endif
 
 if g:DirDiffEnableMappings
-    if !hasmapto('<Plug>DirDiffGet')
-      nnoremap <unique> <Leader>dg <Plug>DirDiffGet
-    endif
-    if !hasmapto('<Plug>DirDiffPut')
-      nnoremap <unique> <Leader>dp <Plug>DirDiffPut
-    endif
-    if !hasmapto('<Plug>DirDiffNext')
-      nnoremap <unique> <Leader>dj <Plug>DirDiffNext
-    endif
-    if !hasmapto('<Plug>DirDiffPrev')
-      nnoremap <unique> <Leader>dk <Plug>DirDiffPrev
-    endif
+    " nnoremap <unique> <Leader>dg <Plug>DirDiffGet
+    " nnoremap <unique> <Leader>dp <Plug>DirDiffPut
+    " nnoremap <unique> <Leader>dj <Plug>DirDiffNext
+    " nnoremap <unique> <Leader>dk <Plug>DirDiffPrev
+    nnoremap <unique> <Leader>dg :diffget<CR>
+    nnoremap <unique> <Leader>dp :diffput<CR>
+    nnoremap <unique> <Leader>dj :DirDiffNext<CR>
+    nnoremap <unique> <Leader>dk :DirDiffPrev<CR>
 endif
 
 " Global Maps:
-map <unique> <script> <Plug>DirDiffGet    :diffget<CR>
-map <unique> <script> <Plug>DirDiffPut    :diffput<CR>
-map <unique> <script> <Plug>DirDiffNext    :call <SID>DirDiffNext()<CR>
-map <unique> <script> <Plug>DirDiffPrev    :call <SID>DirDiffPrev()<CR>
-map <unique> <script> <Plug>DirDiffQuit    :call <SID>DirDiffQuit()<CR>
+" map <unique> <script> <Plug>DirDiffGet    :diffget<CR>
+" map <unique> <script> <Plug>DirDiffPut    :diffput<CR>
+" map <unique> <script> <Plug>DirDiffNext    :call <SID>DirDiffNext()<CR>
+" map <unique> <script> <Plug>DirDiffPrev    :call <SID>DirDiffPrev()<CR>
+" map <unique> <script> <Plug>DirDiffQuit    :call <SID>DirDiffQuit()<CR>
 
 " Default Variables.  You can override these in your global variables
 " settings.
@@ -244,7 +240,11 @@ function! <SID>DirDiff(srcA, srcB)
     " We then put the file [A] and [B] on top of the diff lines
     call append(0, "[A]=". DirDiffAbsSrcA)
     call append(1, "[B]=". DirDiffAbsSrcB)
-    call append(2, "Usage:   <Enter>/'o'=open,'s'=sync,'\\dj'=next,'\\dk'=prev, 'q'=quit")
+    if g:DirDiffEnableMappings
+        call append(2, "Usage:   <Enter>/'o'=open,'s'=sync,'<Leader>dj'=next,'<Leader>dk'=prev, 'q'=quit")
+    else
+        call append(2, "Usage:   <Enter>/'o'=open,'s'=sync,'q'=quit")
+    endif
     call append(3, "Options: 'u'=update,'x'=set excludes,'i'=set ignore,'a'=set args" )
     call append(4, "Diff Args:" . cmdarg)
     call append(5, "")
@@ -281,6 +281,7 @@ function! <SID>DirDiff(srcA, srcB)
 endfunction
 
 " Set up syntax highlighing for the diff window
+"function! <SID>SetupSyntax()
 function! <SID>SetupSyntax()
   if has("syntax") && exists("g:syntax_on") 
       "&& !has("syntax_items")
@@ -288,8 +289,8 @@ function! <SID>SetupSyntax()
     syn match DirDiffSrcB               "\[B\]"
     syn match DirDiffUsage              "^Usage.*"
     syn match DirDiffOptions            "^Options.*"
-    exec 'syn match DirDiffFiles              "' . s:DirDiffDifferLine .'"'
-    exec 'syn match DirDiffOnly               "' . s:DirDiffDiffOnlyLine . '"'
+    " exec 'syn match DirDiffFiles              "' . s:DirDiffDifferLine .'"'
+    " exec 'syn match DirDiffOnly               "' . s:DirDiffDiffOnlyLine . '"'
     syn match DirDiffSelected           "^==>.*" contains=DirDiffSrcA,DirDiffSrcB
 
     hi def link DirDiffSrcA               Directory
@@ -452,6 +453,9 @@ function! <SID>HighlightLine()
     setlocal nomodifiable
     setlocal nomodified
     exe (savedLine)
+    " This is necessary since the modified file would make the syntax
+    " disappear.
+    call <SID>SetupSyntax()
     redraw
 endfunction
 
