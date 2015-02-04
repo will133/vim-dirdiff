@@ -21,11 +21,11 @@ command! -nargs=0 DirDiffQuit call <SID>DirDiffQuit ()
 " \dj - Diff next: (think j for down) 
 " \dk - Diff previous: (think k for up)
 
-if !exists("g:DirEnableMappings")
-    let g:DirEnableMappings = 1
+if !exists("g:DirDiffEnableMappings")
+    let g:DirDiffEnableMappings = 1
 endif
 
-if g:DirDiffEnableMap
+if g:DirDiffEnableMappings
     if !hasmapto('<Plug>DirDiffGet')
       nnoremap <unique> <Leader>dg <Plug>DirDiffGet
     endif
