@@ -16,6 +16,6 @@ With [pathogen.vim](https://github.com/tpope/vim-pathogen):
 
     :DirDiff <dir1> <dir2>
 
-# License
+## License
 
 Copyright (c) 2001-2015 William Lee. (BSD-Like)  See doc/dirdiff.txt.
