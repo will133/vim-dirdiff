@@ -1,0 +1,256 @@
+*dirdiff.txt* Diff and merge two directories recursively
+
+Author:  William Lee <http://wlee.net/> <wl1012@yahoo.com>
+License: BSD-like (see |dirdiff-license|)
+
+INTRODUCTION                                    *dirdiff* *DirDiff*
+
+This plugin enables you to run vim-diff on two directories recursively.  You
+can also perform batch or individual merge through a simple interface.
+
+REQUIREMENTS                                    *dirdiff-requirements*
+
+  - Make sure you have GNU diff in your path on Unix and Windows. I only
+    tested this on cygwin's version on Windows.  If you have a diff that
+    doesn't support -x or -I flag, do not set variable g:DirDiffExcludes and
+    g:DirDiffIgnore to "".  It should still work.
+  - On Windows, you need to have "xcopy", "copy", "del", and "rd" in your
+    path.
+  - On Unix, you need to have "rm" and "cp" in your path.
+
+INSTALLATION                                    *dirdiff-installation*
+
+    cd ~/.vim/bundle
+    git clone git://github.com/will133/vim-dirdiff
+
+USAGE                                           *dirdiff-usage* *:DirDiff*
+
+    :DirDiff <A:Src Directory> <B:Src Directory>
+
+e.g.
+
+    :DirDiff ../something/dir1 /usr/bin/somethingelse/dir2
+
+MAPS                                            *dirdiff-maps*
+
+The following commands can be used inside the diff window:
+
+                                                *dirdiff-enter* *dirdiff-o*
+<Enter>, <o>            Diff open: open the diff file(s) where your cursor is
+                        at
+
+                                                *dirdiff-s*
+<s>                     Synchronize the current diff.  You can also select a
+                        range (through visual) and press 's' to synchronize
+                        differences across a range.
+
+                        There are 6 Options you can choose when you hit <s>:
+
+                        1. A -> B
+                           Copy A to overwrite B
+                           If A's file actually points to a directory, it'll
+                           copy it to B recursively.
+                        2. B -> A
+                           Copy B to overwrite A
+                           If B's file actually points to a directory, it'll
+                           copy it to A recursively.
+                        3. Always A
+                           For the rest of the items that you've selected,
+                           synchronize like (1).
+                        4. Always B
+                           For the rest of the items that you've selected,
+                           synchronize like (2).
+                        5. Skip
+                           Skip this diff entry.
+                        6. Cancel
+                           Quit the loop and exit.
+
+                                                *dirdiff-u*
+<u>                     Diff update: update the diff window
+
+                                                *dirdiff-x*
+<x>                     Sets the exclude pattern, separated by ','
+
+                                                *dirdiff-i*
+<i>                     Sets the ignore pattern, separated by ','
+
+                                                *dirdiff-a*
+<a>                     Sets additional arguments for diff, eg. -w to ignore
+                        white space, etc.
+
+<q>                     Quit DirDiff
+ 
+The following comamnds can be used in the Vim diff mode if this is global flag
+is set to 1 (default to 0):
+
+    let g:DirDiffEnableMappings = 1
+
+Note: by default these would not be added, unlike previous version.  It is
+preferable to not change people's mappings by default.
+
+                                                *dirdiff-leader-dg*
+<Leader>dg              Diff get: maps to :diffget<CR>
+
+                                                *dirdiff-leader-dp*
+<Leader>dp              Diff put: maps to :diffput<CR>
+
+                                                *dirdiff-leader-dj*
+<Leader>dj              Diff next: (think j for down) 
+
+                                                *dirdiff-leader-dk*
+<Leader>dk              Diff previous: (think k for up)
+
+
+OPTIONS                                         *dirdiff-options*
+
+You can add the following "let" lines in your .vimrc file in order to customize
+the plugin's behavior.
+
+Enable additional mappings in diff mode (set to 1 to enable mappings).
+Default to do nothing:
+
+    let g:DirDiffEnableMappings = 0
+
+Sets default exclude pattern:
+
+    let g:DirDiffExcludes = "CVS,*.class,*.exe,.*.swp"
+
+Sets default ignore pattern:
+
+    let g:DirDiffIgnore = "Id:,Revision:,Date:"
+
+If DirDiffSort is set to 1, sorts the diff lines:
+
+    let g:DirDiffSort = 1
+
+Sets the diff window (bottom window) height (rows):
+
+    let g:DirDiffWindowSize = 14
+
+Ignore case during diff:
+
+    let g:DirDiffIgnoreCase = 0
+
+Dynamically figure out the diff text.  If you are using and i18n version of
+diff, this will try to get the specific diff text during runtime.  It's turned
+off by default.  If you are always targetting a specific version of diff, you
+can turn this off and set the DirDiffText* variables accordingly:
+
+    let g:DirDiffDynamicDiffText = 0
+
+String used for the English equivalent "Files ":
+
+    let g:DirDiffTextFiles = "Files "
+
+String used for the English equivalent " and ":
+
+    let g:DirDiffTextAnd = " and "
+
+String used for the English equivalent " differ"):
+
+    let g:DirDiffTextDiffer = " differ"
+
+String used for the English equivalent "Only in ")
+
+    let g:DirDiffTextOnlyIn = "Only in "
+
+OPTIONS EXAMPLE                                 *dirdiff-options-example*
+
+This is an example for setting DirDiffExcludes and DirDiffIgnore in addition
+to enabling the plugin's mappings.  Note that patterns are separated with
+commas and no spaces.
+
+For example, you can set these in your .vimrc file: >
+    let g:DirDiffExcludes = "CVS,*.class,*.o"
+    let g:DirDiffIgnore = "Id:"
+    " ignore white space in diff
+    let g:DirDiffAddArgs = "-w" 
+    let g:DirDiffEnableMappings = 1
+<
+
+WARNING                                         *dirdiff-warning*
+
+This script can copy and remove your files.  This can be powerful (or too
+powerful) at times.  Please be careful and use version control!
+
+LICENSE                                         *dirdiff-license*
+
+Copyright (c) 2001-2015 William Lee.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+  * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+  * Neither the name William Lee nor the names of its contributors may be
+    used to endorse or promote products derived from this software without
+    specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+WILLIAM LEE AND CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+THANKS                                          *dirdiff-thanks*
+
+  Florian Delizy for the i18n diff patch
+  Robert Webb for his sorting function
+  Wu WeiWei for his Chinese diff patch
+  Salman Halim, Yosuke Kimura, and others for their suggestions
+
+HISTORY                                         *dirdiff-history*
+
+1.1.5  - Fixed split windows problems caused by some .vimrc settings.
+1.1.4  - Fixed split windows problems caused by some .vimrc settings.
+1.1.3  - Applied the patch to 1.1.2 by Wu WeiWei in order to make diff
+         that's localized in Chinese work.
+1.1.2  - Applied the patch to 1.1.0 instead of 1.0.2. Please do not use
+         1.1.1
+1.1.1  - Make it work with filename with spaces. (Thanks to Atte Kojo)
+1.1.0  - Added support for i18n (tested on a French version for now only).
+         Can dynamically figure out the diff strings output by diff.
+1.0.2  - Fixed a small typo bug in the quit function.
+1.0.1  - Ensure the path separator is correct when running in W2K
+1.0  - Fixed a bug that flags errors if the user use the nowrapscan option.
+       Implements a quit function that exit the diff windows.
+0.94 - Fixed a bug where the diff will give incorrect A and B file due to
+       similarity of directory names.  Allow you to modify the diff
+       argument.
+0.93 - Opps, messed up the key mapping usage.
+0.92 - Doesn't use n and p mappings since it confuses the search next key
+       mapping and causes some bugs.  Minor modification to change the
+       exclude and ignore pattern.
+0.91 - Clean up delete routine.
+     - Added interactive mode.
+     - Added multiple entries of exclude and ignore pattern.  
+     - Custom configuration through global variables.
+     - Change exclude and ignore patterns on the fly.
+      
+0.9  - Reorganization of the interface.  Much simplier dialog for
+       synchronization.  Support for range synchronization option (REALLY
+       powerful)
+     - Removed unnecessary key bindings.  All key bindings are local to
+       the diff window. (except for the \dg and \dp)
+
+0.8  - Added syntax highlighting.
+     - Enter and double-click in buffer opens diff.
+     - Removed dependency on "sort"
+     - Removed usage of registry and marker
+     - Code cleanup and some bug fixes
+     - On Windows the diff command will use the -i flag instead
+     - Changed mappings for diff next (\dj) and diff previous (\dk)
+     - Added mappings for vim diff mode (\dg, \dp)
+
+0.7  Initial Release
+
+ vim:tw=78:et:ft=help:norl:
