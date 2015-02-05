@@ -26,10 +26,6 @@ if !exists("g:DirDiffEnableMappings")
 endif
 
 if g:DirDiffEnableMappings
-    " nnoremap <unique> <Leader>dg <Plug>DirDiffGet
-    " nnoremap <unique> <Leader>dp <Plug>DirDiffPut
-    " nnoremap <unique> <Leader>dj <Plug>DirDiffNext
-    " nnoremap <unique> <Leader>dk <Plug>DirDiffPrev
     nnoremap <unique> <Leader>dg :diffget<CR>
     nnoremap <unique> <Leader>dp :diffput<CR>
     nnoremap <unique> <Leader>dj :DirDiffNext<CR>
@@ -37,11 +33,6 @@ if g:DirDiffEnableMappings
 endif
 
 " Global Maps:
-" map <unique> <script> <Plug>DirDiffGet    :diffget<CR>
-" map <unique> <script> <Plug>DirDiffPut    :diffput<CR>
-" map <unique> <script> <Plug>DirDiffNext    :call <SID>DirDiffNext()<CR>
-" map <unique> <script> <Plug>DirDiffPrev    :call <SID>DirDiffPrev()<CR>
-" map <unique> <script> <Plug>DirDiffQuit    :call <SID>DirDiffQuit()<CR>
 
 " Default Variables.  You can override these in your global variables
 " settings.
@@ -241,7 +232,7 @@ function! <SID>DirDiff(srcA, srcB)
     call append(0, "[A]=". DirDiffAbsSrcA)
     call append(1, "[B]=". DirDiffAbsSrcB)
     if g:DirDiffEnableMappings
-        call append(2, "Usage:   <Enter>/'o'=open,'s'=sync,'<Leader>dj'=next,'<Leader>dk'=prev, 'q'=quit")
+        call append(2, "Usage:   <Enter>/'o'=open,'s'=sync,'<Leader>dg'=diffget,'<Leader>dp'=diffput,'<Leader>dj'=next,'<Leader>dk'=prev, 'q'=quit")
     else
         call append(2, "Usage:   <Enter>/'o'=open,'s'=sync,'q'=quit")
     endif
