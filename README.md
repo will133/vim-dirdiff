@@ -5,6 +5,8 @@ DirDiff plugin for Vim
 If you like Vim's diff mode, you would love to do this recursively on two
 directories!
 
+![DirDiff Session](/screenshot.png?raw=true "DirDiff Session")
+
 ## Installation
 
 With [pathogen.vim](https://github.com/tpope/vim-pathogen):
