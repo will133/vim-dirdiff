@@ -24,12 +24,14 @@ INSTALLATION                                    *dirdiff-installation*
     git clone git://github.com/will133/vim-dirdiff
 
 USAGE                                           *dirdiff-usage* *:DirDiff*
-
+ >
     :DirDiff <A:Src Directory> <B:Src Directory>
+<
 
-e.g.
-
+For example:
+ >
     :DirDiff ../something/dir1 /usr/bin/somethingelse/dir2
+<
 
 MAPS                                            *dirdiff-maps*
 
@@ -81,9 +83,10 @@ The following commands can be used inside the diff window:
 <q>                     Quit DirDiff
  
 The following comamnds can be used in the Vim diff mode if this is global flag
-is set to 1 (default to 0):
+is set to 1 (default to 0): >
 
     let g:DirDiffEnableMappings = 1
+<
 
 Note: by default these would not be added, unlike previous version.  It is
 preferable to not change people's mappings by default.
@@ -107,50 +110,50 @@ You can add the following "let" lines in your .vimrc file in order to customize
 the plugin's behavior.
 
 Enable additional mappings in diff mode (set to 1 to enable mappings).
-Default to do nothing:
+Default to do nothing: >
 
     let g:DirDiffEnableMappings = 0
-
-Sets default exclude pattern:
+<
+Sets default exclude pattern: >
 
     let g:DirDiffExcludes = "CVS,*.class,*.exe,.*.swp"
 
-Sets default ignore pattern:
+Sets default ignore pattern: >
 
     let g:DirDiffIgnore = "Id:,Revision:,Date:"
 
-If DirDiffSort is set to 1, sorts the diff lines:
+If DirDiffSort is set to 1, sorts the diff lines: >
 
     let g:DirDiffSort = 1
 
-Sets the diff window (bottom window) height (rows):
+Sets the diff window (bottom window) height (rows): >
 
     let g:DirDiffWindowSize = 14
 
-Ignore case during diff:
+Ignore case during diff: >
 
     let g:DirDiffIgnoreCase = 0
 
 Dynamically figure out the diff text.  If you are using and i18n version of
 diff, this will try to get the specific diff text during runtime.  It's turned
 off by default.  If you are always targetting a specific version of diff, you
-can turn this off and set the DirDiffText* variables accordingly:
+can turn this off and set the DirDiffText* variables accordingly: >
 
     let g:DirDiffDynamicDiffText = 0
 
-String used for the English equivalent "Files ":
+String used for the English equivalent "Files ": >
 
     let g:DirDiffTextFiles = "Files "
 
-String used for the English equivalent " and ":
+String used for the English equivalent " and ": >
 
     let g:DirDiffTextAnd = " and "
 
-String used for the English equivalent " differ"):
+String used for the English equivalent " differ"): >
 
     let g:DirDiffTextDiffer = " differ"
 
-String used for the English equivalent "Only in ")
+String used for the English equivalent "Only in "): >
 
     let g:DirDiffTextOnlyIn = "Only in "
 
@@ -161,6 +164,7 @@ to enabling the plugin's mappings.  Note that patterns are separated with
 commas and no spaces.
 
 For example, you can set these in your .vimrc file: >
+
     let g:DirDiffExcludes = "CVS,*.class,*.o"
     let g:DirDiffIgnore = "Id:"
     " ignore white space in diff
