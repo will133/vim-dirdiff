@@ -439,7 +439,8 @@ function! <SID>HighlightLine()
     setlocal modifiable
     let line = getline(".")
     if (match(line, "^    ") == 0)
-        s/^    /==> /
+        let line = substitute(line, "^    ", "==> ", "")
+        call setline(savedLine, line)
     endif
     setlocal nomodifiable
     setlocal nomodified
@@ -456,7 +457,8 @@ function! <SID>DeHighlightLine()
     let line = getline(".")
     setlocal modifiable
     if (match(line, "^==> ") == 0)
-        s/^==> /    /
+        let line = substitute(line, "^==> ", "    ", "")
+        call setline(line("."), line)
     endif
     setlocal nomodifiable
     setlocal nomodified
