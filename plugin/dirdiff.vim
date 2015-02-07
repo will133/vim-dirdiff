@@ -170,7 +170,7 @@ function! <SID>DirDiff(srcA, srcB)
     let DirDiffAbsSrcA = substitute(DirDiffAbsSrcA, '\\$\|/$', '', '')
     let DirDiffAbsSrcB = substitute(DirDiffAbsSrcB, '\\$\|/$', '', '')
 
-    let DiffBuffer = tempname()
+    let s:FilenameDiffWindow = tempname()
     " We first write to that file
     " Constructs the command line
     let cmd = "!diff"
@@ -193,7 +193,7 @@ function! <SID>DirDiff(srcA, srcB)
 "    let addarg = input("Additional diff args (current =". cmdarg. "): ")
     let addarg = ""
     let cmd = cmd.cmdarg." ".addarg." \"".DirDiffAbsSrcA."\" \"".DirDiffAbsSrcB."\""
-    let cmd = cmd." > \"".DiffBuffer."\""
+    let cmd = cmd." > \"".s:FilenameDiffWindow."\""
 
     echo "Diffing directories, it may take a while..."
     let error = <SID>DirDiffExec(cmd, 0)
@@ -201,7 +201,7 @@ function! <SID>DirDiff(srcA, srcB)
         redraw | echom "diff found no differences - directories match."
         return
     endif
-    silent exe "edit ".DiffBuffer
+    silent exe "edit ".s:FilenameDiffWindow
     echo "Defining [A] and [B] ... "
     " We then do a substitution on the directory path
     " We need to do substitution of the the LONGER string first, otherwise
@@ -305,9 +305,13 @@ endfun
 function! <SID>DirDiffQuit()
     let in = confirm ("Are you sure you want to quit DirDiff?", "&Yes\n&No", 2)
     if (in == 1)
-        call <SID>CloseDiffWindows()
+        call <SID>SaveDiffWindowsIfModified()
         bd!
     endif
+    unlet! s:FilenameDiffWindow
+    unlet! s:FilenameA
+    unlet! s:FilenameB
+    unlet! s:LastMode
 endfun
 
 " Returns an escaped version of the path for regex uses
@@ -316,19 +320,23 @@ function! <SID>EscapeDirForRegex(path)
     return escape(a:path, "/\\[]$^~")
 endfunction
 
+" Closes a specified window
+function! <SID>AskToSaveFileIfModified(file)
+    let bufNum = bufnr(a:file)
+    if !bufexists(bufNum)
+        return
+    endif
+
+    call <SID>SaveIfModified(bufNum)
+endfunction
+
 " Close the opened diff comparison windows if they exist
-function! <SID>CloseDiffWindows()
-    if (<SID>AreDiffWinsOpened())
-        wincmd k
-        " Ask the user to save if buffer is modified
-        call <SID>AskIfModified()
-        bd!
-        " User may just have one window opened, we may not need to close
-        " the second diff window
-        if (&diff)
-            call <SID>AskIfModified()
-            bd!
-        endif
+function! <SID>SaveDiffWindowsIfModified()
+    if exists("s:FilenameA")
+        call <SID>AskToSaveFileIfModified(s:FilenameA)
+    endif
+    if exists("s:FilenameA")
+        call <SID>AskToSaveFileIfModified(s:FilenameB)
     endif
 endfunction
 
@@ -348,74 +356,110 @@ function! <SID>EchoErr(varName, varValue)
 	echoe '' . a:varName . ' : ' . a:varValue
 endfunction
 
+function! <SID>GotoDiffWindow()
+    exe "drop ".s:FilenameDiffWindow
+endfunction
+
 function! <SID>DirDiffOpen()
-    " First dehighlight the last marked
+    " Ensure we're in the right window
+    call <SID>GotoDiffWindow()
+    if exists("b:currentDiff") && b:currentDiff == line(".")
+        return
+    endif
+
+    " First dehighlight the last marked line
     call <SID>DeHighlightLine()
 
-	let buffNumber = bufnr('%')
+    " Close existing diff windows
+    call <SID>SaveDiffWindowsIfModified()
+
+    " Change back to the right window
+    call <SID>GotoDiffWindow()
+
     let line = getline(".")
-
-    " We first parse back the [A] and [B] directories from the top of the line
-    let dirA = <SID>GetBaseDir("A")
-    let dirB = <SID>GetBaseDir("B")
-
-
-    " Save the number of this window, to which we wish to return
-    " This is required in case there are other windows open
-	" let thisWindow = winnr()
-	"let thisWindow = winnr(buffNumber)
-
-	exec 'buffer ' . buffNumber
-
-    call <SID>CloseDiffWindows()
-    " Mark the current location of the line
-    "mark n
     let b:currentDiff = line(".")
 
-    " Ensure we're in the right window
-    " silent! exec thisWindow.'wincmd w'
+    let previousFileA = exists("s:FilenameA") ? s:FilenameA : ""
+    let previousFileB = exists("s:FilenameB") ? s:FilenameB : ""
 
     " Parse the line and see whether it's a "Only in" or "Files Differ"
     call <SID>HighlightLine()
     let fileA = <SID>GetFileNameFromLine("A", line)
     let fileB = <SID>GetFileNameFromLine("B", line)
+    let s:FilenameA = <SID>EscapeFileName(fileA)
+    let s:FilenameB = <SID>EscapeFileName(fileB)
+
     if <SID>IsOnly(line)
         " We open the file
         let fileSrc = <SID>ParseOnlySrc(line)
         if (fileSrc == "A")
-            let fileToOpen = fileA
+            let fileToOpen = s:FilenameA
         elseif (fileSrc == "B")
-            let fileToOpen = fileB
+            let fileToOpen = s:FilenameB
         endif
-        split
-        wincmd k
-        silent exec "edit ". <SID>EscapeFileName(fileToOpen)
+
+        if exists("s:LastMode")
+            if s:LastMode == 2
+                silent exec "bd ".bufnr(previousFileA)
+
+                silent exec "drop ".previousFileB
+                silent exec "edit ".fileToOpen
+            else
+                let previousFile = (s:LastMode == "A") ? previousFileA : previousFileB
+                silent exec "drop ".previousFile
+                silent exec "edit ".fileToOpen
+                silent exec "bd ".bufnr(previousFile)
+            endif
+        else
+            silent exec "split ".fileToOpen
+        endif
+
         " Fool the window saying that this is diff
         diffthis
-        wincmd j
+        call <SID>GotoDiffWindow()
         " Resize the window
         exe("resize " . g:DirDiffWindowSize)
         exe (b:currentDiff)
+        let s:LastMode = fileSrc
     elseif <SID>IsDiffer(line)
-        "Open the diff windows
-        split
-        wincmd k
-        silent exec "edit ".<SID>EscapeFileName(fileB)
 
-        " To ensure that A is on the left and B on the right, splitright must be off
-        " let saved_splitright = &splitright
-        " set nosplitright
-        " silent exec "vert diffsplit ".<SID>EscapeFileName(fileA)
-        " let &splitright = saved_splitright
-        silent exec "leftabove vert diffsplit ".<SID>EscapeFileName(fileA)
+        if exists("s:LastMode")
+            if s:LastMode == 2
+                silent exec "drop ".previousFileA
+                silent exec "edit ".s:FilenameA
+                diffthis
+                silent exec "bd ".bufnr(previousFileA)
+
+                silent exec "drop ".previousFileB
+                silent exec "edit ".s:FilenameB
+                diffthis
+                silent exec "bd ".bufnr(previousFileB)
+            else
+                let previousFile = (s:LastMode == "A") ? previousFileA : previousFileB
+                silent exec "drop ".previousFile
+                silent exec "edit ".s:FilenameB
+                silent exec "bd ".bufnr(previousFile)
+                diffthis
+
+                " To ensure that A is on the left and B on the right, splitright must be off
+                silent exec "leftabove vert diffsplit ".s:FilenameA
+            endif
+        else
+            "Open the diff windows
+            silent exec "split ".s:FilenameB
+
+            " To ensure that A is on the left and B on the right, splitright must be off
+            silent exec "leftabove vert diffsplit ".s:FilenameA
+        endif
 
         " Go back to the diff window
-        wincmd j
+        call <SID>GotoDiffWindow()
         " Resize the window
         exe("resize " . g:DirDiffWindowSize)
         exe (b:currentDiff)
         " Center the line
         exe ("normal z.")
+        let s:LastMode = 2
     else
         echo "There is no diff at the current line!"
     endif
@@ -423,16 +467,24 @@ endfunction
 
 " Ask the user to save if the buffer is modified
 "
-function! <SID>AskIfModified()
-    if (&modified)
-        let input = confirm("File " . expand("%:p") . " has been modified.", "&Save\nCa&ncel", 1)
+function! <SID>SaveIfModified(bufNum)
+    if &autowriteall
+        return
+    endif
+
+    if (getbufvar(a:bufNum, "&modified"))
+        let name = bufname(a:bufNum)
+        let fullName = fnamemodify(name, ":p")
+        let input = confirm("File " . fullName . " has been modified.", "&Save\nCa&ncel", 1)
         if (input == 1)
-            w!
+            silent exec "drop ".name
+            exec "w! ".name
         endif
     endif
 endfunction
 
-
+" Highlights the selected line in the diff window
+"
 function! <SID>HighlightLine()
     let savedLine = line(".")
     exe (b:currentDiff)
@@ -451,6 +503,8 @@ function! <SID>HighlightLine()
     redraw
 endfunction
 
+" Removes the highlight from the selected line in the diff window
+"
 function! <SID>DeHighlightLine()
     let savedLine = line(".")
     exe (b:currentDiff)
@@ -483,9 +537,7 @@ endfunction
 
 function! <SID>DirDiffNext()
     " If the current window is a diff, go down one
-    if (&diff == 1)
-        wincmd j
-    endif
+    call <SID>GotoDiffWindow()
     " if the current line is <= 6, (within the header range), we go to the
     " first diff line open it
     if (line(".") < s:DirDiffFirstDiffLine)
@@ -498,9 +550,7 @@ endfunction
 
 function! <SID>DirDiffPrev()
     " If the current window is a diff, go down one
-    if (&diff == 1)
-        wincmd j
-    endif
+    call <SID>GotoDiffWindow()
     silent! exe (b:currentDiff - 1)
     call <SID>DirDiffOpen()
 endfunction
@@ -749,33 +799,6 @@ function! <SID>Delete(fileFromOrig)
         echo "Can't delete " . fileFrom
     endif
     return error
-endfunction
-
-function! <SID>AreDiffWinsOpened()
-    let currBuff = expand("%:p")
-    let currLine = line(".")
-    wincmd k
-    let abovedBuff = expand("%:p")
-    if (&diff)
-        let abovedIsDiff = 1
-    else
-        let abovedIsDiff = 0
-    endif
-    " Go Back if the aboved buffer is not the same
-    if (currBuff != abovedBuff)
-        wincmd j
-        " Go back to the same line
-        exe (currLine)
-        if (abovedIsDiff == 1)
-            return 1
-        else
-            " Aboved is just a bogus buffer, not a diff buffer
-            return 0
-        endif
-    else
-        exe (currLine)
-        return 0
-    endif
 endfunction
 
 " The given line begins with the "Only in"
