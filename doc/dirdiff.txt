@@ -134,6 +134,14 @@ Ignore case during diff: >
 
     let g:DirDiffIgnoreCase = 0
 
+Force setting the LANG variable before running DirDiff: >
+
+    let g:DirDiffForceLang = "C"
+
+You can set g:DirDiffForceLang to "" in turn this off (the system's LANG would
+be used in such case).  You may need to customize the following variables so
+DirDiff can match the correct text in your locale.
+
 Dynamically figure out the diff text.  If you are using and i18n version of
 diff, this will try to get the specific diff text during runtime.  It's turned
 off by default.  If you are always targetting a specific version of diff, you

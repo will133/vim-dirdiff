@@ -76,6 +76,17 @@ if !exists("g:DirDiffDynamicDiffText")
     let g:DirDiffDynamicDiffText = 0
 endif
 
+" Force set the LANG variable before running the C command.  Default to C.
+" Set to "" to not set the variable.
+if !exists("g:DirDiffForceLang")
+    let g:DirDiffForceLang = "C"
+endif
+
+let g:DirDiffLangString = ""
+if (g:DirDiffForceLang == "")
+    let g:DirDiffLangString = 'LANG=' . g:DirDiffForceLang . ' '
+endif
+
 " String used for the English equivalent "Files "
 if !exists("g:DirDiffTextFiles")
     let g:DirDiffTextFiles = "Files "
@@ -173,7 +184,8 @@ function! <SID>DirDiff(srcA, srcB)
     let DiffBuffer = tempname()
     " We first write to that file
     " Constructs the command line
-    let cmd = "!diff"
+    let langStr = ""
+    let cmd = "!" . g:DirDiffLangString . "diff"
     let cmdarg = " -r --brief"
 
     " If variable is set, we ignore the case
@@ -891,7 +903,7 @@ function! <SID>GetDiffStrings()
 	silent exe s:DirDiffMakeDirCmd . "\"" . tmp1 . "\""
 	silent exe s:DirDiffMakeDirCmd . "\"" . tmp2 . "\""
 	silent exe "!echo test > \"" . tmp1 . s:sep . "test" . "\""
-	silent exe "!diff -r --brief \"" . tmp1 . "\" \"" . tmp2 . "\" > \"" . tmpdiff . "\""
+	silent exe "!" . g:DirDiffLangString . "diff -r --brief \"" . tmp1 . "\" \"" . tmp2 . "\" > \"" . tmpdiff . "\""
 
 	" Now get the result of that diff cmd
 	silent exe "split ". tmpdiff
@@ -909,7 +921,7 @@ function! <SID>GetDiffStrings()
     "echo "Getting the diff in GetDiffStrings"
 	
 	silent exe "!echo testdifferent > \"" . tmp2 . s:sep . "test" . "\""
-	silent exe "!diff -r --brief \"" . tmp1 . "\" \"" . tmp2 . "\" > \"" . tmpdiff . "\""
+	silent exe "!" . g:DirDiffLangString . "diff -r --brief \"" . tmp1 . "\" \"" . tmp2 . "\" > \"" . tmpdiff . "\""
 	
 	silent exe "split ". tmpdiff
 	let s:DirDiffDifferLine = substitute( getline(1), tmp1rx . ".*$", "", '') 
