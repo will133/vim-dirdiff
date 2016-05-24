@@ -253,6 +253,7 @@ function! <SID>DirDiff(srcA, srcB)
     call append(5, "")
     " go to the beginning of the file
     0
+    setlocal filetype=dirdiff
     setlocal nomodified
     setlocal nomodifiable
     setlocal buftype=nowrite
@@ -915,7 +916,7 @@ function! <SID>GetDiffStrings()
 	let s:DirDiffDiffOnlyLineCenter = substitute( getline(1), regex, '\2', '') 
     "echo "DirDiff Only: " . s:DirDiffDiffOnlyLine
 	
-	q
+	bd
 
 	" Now let's get the Differ string
     "echo "Getting the diff in GetDiffStrings"
