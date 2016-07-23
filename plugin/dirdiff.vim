@@ -83,7 +83,7 @@ if !exists("g:DirDiffForceLang")
 endif
 
 let g:DirDiffLangString = ""
-if (g:DirDiffForceLang == "")
+if (g:DirDiffForceLang != "")
     let g:DirDiffLangString = 'LANG=' . g:DirDiffForceLang . ' '
 endif
 
