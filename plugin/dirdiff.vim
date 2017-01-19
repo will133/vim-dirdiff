@@ -26,10 +26,10 @@ if !exists("g:DirDiffEnableMappings")
 endif
 
 if g:DirDiffEnableMappings
-    nnoremap <unique> <Leader>dg :diffget<CR>
-    nnoremap <unique> <Leader>dp :diffput<CR>
-    nnoremap <unique> <Leader>dj :DirDiffNext<CR>
-    nnoremap <unique> <Leader>dk :DirDiffPrev<CR>
+    nnoremap <Leader>dg :diffget<CR>
+    nnoremap <Leader>dp :diffput<CR>
+    nnoremap <Leader>dj :DirDiffNext<CR>
+    nnoremap <Leader>dk :DirDiffPrev<CR>
 endif
 
 " Global Maps:
