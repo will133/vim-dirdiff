@@ -709,6 +709,8 @@ endfunction
 " executing the command.
 function! <SID>DirDiffExec(cmd, interactive)
     let error = 0
+    let shell_save = &shell
+    set shell=sh
     if (a:interactive)
         exe (a:cmd)
         let error = v:shell_error
@@ -716,6 +718,7 @@ function! <SID>DirDiffExec(cmd, interactive)
         silent exe (a:cmd)
         let error = v:shell_error
     endif
+    let &shell = shell_save
 "    let d = input("DirDiffExec: " . a:cmd . " " . a:interactive . " returns " . v:shell_error)
     return error
 endfunction
