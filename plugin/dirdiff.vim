@@ -84,7 +84,11 @@ endif
 
 let g:DirDiffLangString = ""
 if (g:DirDiffForceLang != "")
-    let g:DirDiffLangString = 'LANG=' . g:DirDiffForceLang . ' '
+    if has('win32') && !has('win32unix')
+      let g:DirDiffLangString = 'SET LANG=' . g:DirDiffForceLang . ' && '
+    else
+      let g:DirDiffLangString = 'LANG=' . g:DirDiffForceLang . ' '
+    endif
 endif
 
 " String used for the English equivalent "Files "
