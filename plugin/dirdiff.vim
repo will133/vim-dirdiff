@@ -628,6 +628,7 @@ function! <SID>DirDiffSync() range
             let currLine = currLine + 1
         endif
     endwhile
+    redraw!
     echo syncCount . " diff item(s) synchronized."
 endfunction
 
