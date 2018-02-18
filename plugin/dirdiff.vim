@@ -26,10 +26,10 @@ if !exists("g:DirDiffEnableMappings")
 endif
 
 if g:DirDiffEnableMappings
-    nnoremap <unique> <Leader>dg :diffget<CR>
-    nnoremap <unique> <Leader>dp :diffput<CR>
-    nnoremap <unique> <Leader>dj :DirDiffNext<CR>
-    nnoremap <unique> <Leader>dk :DirDiffPrev<CR>
+    nnoremap <Leader>dg :diffget<CR>
+    nnoremap <Leader>dp :diffput<CR>
+    nnoremap <Leader>dj :DirDiffNext<CR>
+    nnoremap <Leader>dk :DirDiffPrev<CR>
 endif
 
 " Global Maps:
@@ -84,7 +84,11 @@ endif
 
 let g:DirDiffLangString = ""
 if (g:DirDiffForceLang != "")
-    let g:DirDiffLangString = 'LANG=' . g:DirDiffForceLang . ' '
+    if has('win32') && !has('win32unix')
+      let g:DirDiffLangString = 'SET LANG=' . g:DirDiffForceLang . ' && '
+    else
+      let g:DirDiffLangString = 'LANG=' . g:DirDiffForceLang . ' '
+    endif
 endif
 
 " String used for the English equivalent "Files "
@@ -676,6 +680,7 @@ function! <SID>DirDiffSync() range
             let currLine = currLine + 1
         endif
     endwhile
+    redraw!
     echo syncCount . " diff item(s) synchronized."
 endfunction
 
