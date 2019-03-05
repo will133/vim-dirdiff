@@ -18,8 +18,20 @@ With [pathogen.vim](https://github.com/tpope/vim-pathogen):
 
     :DirDiff <dir1> <dir2>
 
+To open DirDiff from the command line, run `vim -c "DirDiff dir1 dir2"`
+or add the following function to your shell init file:
+
+    function dirdiff()
+    {
+        # Shell-escape each path:
+        DIR1=$(printf '%q' "$1"); shift
+        DIR2=$(printf '%q' "$1"); shift
+        vim $@ -c "DirDiff $DIR1 $DIR2"
+    }
+
 If you use pathogen, you can use :Helptags to regenerate documentation.  You
 then can see ":h dirdiff" for more information.
+
 
 ## License
 
