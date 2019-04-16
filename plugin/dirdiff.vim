@@ -71,6 +71,12 @@ endif
 if !exists("g:DirDiffIgnoreCase")
     let g:DirDiffIgnoreCase = 0
 endif
+if !exists("g:DirDiffTheme")
+    let g:DirDiffTheme=""
+endif
+if !exists("g:DirDiffSimpleMap")
+    let g:DirDiffSimpleMap=0
+endif
 " Additional arguments
 if !exists("g:DirDiffAddArgs")
     let g:DirDiffAddArgs = ""
@@ -182,7 +188,6 @@ function! <SID>DirDiff(srcA, srcB)
     " Setup
     let DirDiffAbsSrcA = fnamemodify(expand(a:srcA, ":p"), ":p")
     let DirDiffAbsSrcB = fnamemodify(expand(a:srcB, ":p"), ":p")
-
     " Check for an internationalized version of diff ?
     call <SID>GetDiffStrings()
 
@@ -727,6 +732,13 @@ function! <SID>DirDiffExec(cmd, interactive)
         let error = v:shell_error
     endif
 "    let d = input("DirDiffExec: " . a:cmd . " " . a:interactive . " returns " . v:shell_error)
+    if !empty(g:DirDiffTheme)
+      execute "colorscheme ". g:DirDiffTheme
+    endif
+    if g:DirDiffSimpleMap
+    	nnoremap [ [c
+	    nnoremap ] ]c
+    endif
     return error
 endfunction
 
