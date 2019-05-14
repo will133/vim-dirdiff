@@ -33,19 +33,6 @@ If you use pathogen, you can use :Helptags to regenerate documentation.  You
 then can see ":h dirdiff" for more information.
 
 
-To specify a theme, add
-```
-let g:DirDiffTheme = 'github' " or any valid colorscheme
-```
-to your .vimrc
-
-Adding 
-```
-let g:DirDiffSimpleMap=1
-```
-to your .vimrc will turn on 
-[ and ] mappings (to replace [c and ]c)
-
 ## License
 
 Copyright (c) 2001-2015 William Lee. (BSD-Like)  See doc/dirdiff.txt.

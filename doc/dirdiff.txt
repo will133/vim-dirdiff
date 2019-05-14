@@ -168,10 +168,13 @@ String used for the English equivalent "Only in "): >
 
     let g:DirDiffTextOnlyIn = "Only in "
 
-To specify a theme:
-    let g:DirDiffTheme = github " or any valid colorscheme
-To use [ and ] rather than [c and ]c motions:      
-    let g:DirDiffSimpleMap=1
+To specify a valid theme (e.g. github): >
+
+    let g:DirDiffTheme = "github"
+
+To use [ and ] rather than [c and ]c motions: >
+
+    let g:DirDiffSimpleMap = 1
 
 OPTIONS EXAMPLE                                 *dirdiff-options-example*
 
