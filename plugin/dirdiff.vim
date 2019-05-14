@@ -81,6 +81,10 @@ if !exists("g:DirDiffDynamicDiffText")
     let g:DirDiffDynamicDiffText = 0
 endif
 
+if !exists("g:DirDiffIgnoreFileNameCase")
+    let g:DirDiffIgnoreFileNameCase = 0
+endif
+
 " Force set the LANG variable before running the C command.  Default to C.
 " Set to "" to not set the variable.
 if !exists("g:DirDiffForceLang")
@@ -196,6 +200,10 @@ function! <SID>DirDiff(srcA, srcB)
     let langStr = ""
     let cmd = "!" . g:DirDiffLangString . "diff"
     let cmdarg = " -r --brief"
+
+    if (g:DirDiffIgnoreFileNameCase)
+	let cmdarg = cmdarg." --ignore-file-name-case"
+    endif
 
     " If variable is set, we ignore the case
     if (g:DirDiffIgnoreCase)

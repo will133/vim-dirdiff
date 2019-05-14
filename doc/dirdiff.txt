@@ -114,6 +114,9 @@ Default to do nothing: >
 
     let g:DirDiffEnableMappings = 0
 <
+Ignore FileName case during diff: >
+    let g:DirDiffIgnoreFileNameCase = 0
+
 Sets default exclude pattern: >
 
     let g:DirDiffExcludes = "CVS,*.class,*.exe,.*.swp"
