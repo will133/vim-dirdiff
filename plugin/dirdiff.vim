@@ -72,10 +72,10 @@ if !exists("g:DirDiffIgnoreCase")
     let g:DirDiffIgnoreCase = 0
 endif
 if !exists("g:DirDiffTheme")
-    let g:DirDiffTheme=""
+    let g:DirDiffTheme = ""
 endif
 if !exists("g:DirDiffSimpleMap")
-    let g:DirDiffSimpleMap=0
+    let g:DirDiffSimpleMap = 0
 endif
 " Additional arguments
 if !exists("g:DirDiffAddArgs")
