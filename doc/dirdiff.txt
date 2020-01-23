@@ -115,6 +115,7 @@ Default to do nothing: >
     let g:DirDiffEnableMappings = 0
 <
 Ignore FileName case during diff: >
+
     let g:DirDiffIgnoreFileNameCase = 0
 
 Sets default exclude pattern: >
@@ -175,6 +176,12 @@ To specify a valid theme (e.g. github): >
 To use [ and ] rather than [c and ]c motions: >
 
     let g:DirDiffSimpleMap = 1
+
+Add extra options to the "diff" tool. For example, use "-w" to ignore white
+spaces or "-N" to list all new files even when inside a new folder (instead of
+just listing the new folder name)
+
+    let g:DirDiffAddArgs = "-w"
 
 OPTIONS EXAMPLE                                 *dirdiff-options-example*
 
