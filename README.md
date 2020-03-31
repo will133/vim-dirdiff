@@ -14,6 +14,17 @@ With [pathogen.vim](https://github.com/tpope/vim-pathogen):
     cd ~/.vim/bundle
     git clone git://github.com/will133/vim-dirdiff
 
+With [vim-plug](https://github.com/junegunn/vim-plug):
+
+    Plug 'will133/vim-dirdiff'
+
+With Vim 8+'s default packaging system:
+
+    mkdir -p ~/.vim/pack/bundle/start
+    cd ~/.vim/pack/bundle/start
+    git clone git://github.com/will133/vim-dirdiff
+
+
 ## Usage
 
     :DirDiff <dir1> <dir2>
