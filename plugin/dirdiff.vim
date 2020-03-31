@@ -93,6 +93,12 @@ if !exists("g:DirDiffForceLang")
     let g:DirDiffForceLang = "C"
 endif
 
+" Force the shell to run the diff command to be this.  If set to  an empty
+" string, the shell would not be changed.
+if !exists("g:DirDiffForceShell")
+    let g:DirDiffForceShell = ""
+endif
+
 let g:DirDiffLangString = ""
 if (g:DirDiffForceLang != "")
     if has('win32') && !has('win32unix')
@@ -792,12 +798,21 @@ endfunction
 " executing the command.
 function! <SID>DirDiffExec(cmd, interactive)
     let error = 0
+    " On Unix, if we use a different shell other than bash, we can cause
+    " problem
+    if g:DirDiffForceShell != ""
+        let shell_save = &shell
+        let &shell = g:DirDiffForceShell
+    endif
     if (a:interactive)
         exe (a:cmd)
         let error = v:shell_error
     else
         silent exe (a:cmd)
         let error = v:shell_error
+    endif
+    if g:DirDiffForceShell != ""
+        let &shell = shell_save
     endif
 "    let d = input("DirDiffExec: " . a:cmd . " " . a:interactive . " returns " . v:shell_error)
     if !empty(g:DirDiffTheme)
