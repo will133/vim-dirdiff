@@ -14,7 +14,7 @@ With [pathogen.vim](https://github.com/tpope/vim-pathogen):
     cd ~/.vim/bundle
     git clone git://github.com/will133/vim-dirdiff
 
-With [vim-plug](https://github.com/junegunn/vim-plug):
+With [vim-plug](https://github.com/junegunn/vim-plug), in your ~/.vimrc:
 
     Plug 'will133/vim-dirdiff'
 
