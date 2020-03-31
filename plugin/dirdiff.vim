@@ -1,9 +1,5 @@
 " -*- vim -*-
-" FILE: "/home/wlee/.vim/plugin/DirDiff.vim" {{{
-" LAST MODIFICATION: "Wed, 11 Apr 2012 15:49:03 -0500 (wlee)"
-" HEADER MAINTAINED BY: N/A
-" VERSION: 1.1.5
-" (C) 2001-2015 by William Lee, <wl1012@yahoo.com>
+" (C) 2001-2020 by William Lee, <wl1012@yahoo.com>
 " }}}
 
 if exists('g:loaded_dirdiff')
@@ -391,8 +387,20 @@ function! <SID>EchoErr(varName, varValue)
 	echoe '' . a:varName . ' : ' . a:varValue
 endfunction
 
+function! <SID>Drop(fname)
+    " We need to replace the :drop implementation due to this issue:
+    " https://github.com/vim/vim/issues/1503.  Thus if wideignore is set the
+    " command would no work.  This is intended to work around that issue
+    let winid = bufwinid(a:fname)
+    if winid > 0
+        call win_gotoid(winid)
+    else
+        exe 'edit ' a:fname
+    endif
+endfunction
+
 function! <SID>GotoDiffWindow()
-    exe "drop ".s:FilenameDiffWindow
+    call <SID>Drop(s:FilenameDiffWindow)
 endfunction
 
 function! <SID>DirDiffOpen()
