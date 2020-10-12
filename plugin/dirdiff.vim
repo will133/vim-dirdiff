@@ -451,11 +451,11 @@ function! <SID>DirDiffOpen()
             if s:LastMode == 2
                 silent exec "bd ".bufnr(previousFileA)
 
-                silent exec "drop ".previousFileB
+                call <SID>Drop(previousFileB)
                 silent exec "edit ".fileToOpen
             else
                 let previousFile = (s:LastMode == "A") ? previousFileA : previousFileB
-                silent exec "drop ".previousFile
+                call <SID>Drop(previousFile)
                 silent exec "edit ".fileToOpen
                 silent exec "bd ".bufnr(previousFile)
             endif
@@ -474,18 +474,18 @@ function! <SID>DirDiffOpen()
 
         if exists("s:LastMode")
             if s:LastMode == 2
-                silent exec "drop ".previousFileA
+                call <SID>Drop(previousFileA)
                 silent exec "edit ".s:FilenameA
                 diffthis
                 silent exec "bd ".bufnr(previousFileA)
 
-                silent exec "drop ".previousFileB
+                call <SID>Drop(previousFileB)
                 silent exec "edit ".s:FilenameB
                 diffthis
                 silent exec "bd ".bufnr(previousFileB)
             else
                 let previousFile = (s:LastMode == "A") ? previousFileA : previousFileB
-                silent exec "drop ".previousFile
+                call <SID>Drop(previousFile)
                 silent exec "edit ".s:FilenameB
                 silent exec "bd ".bufnr(previousFile)
                 diffthis
@@ -526,7 +526,7 @@ function! <SID>SaveIfModified(bufNum)
         let fullName = fnamemodify(name, ":p")
         let input = confirm("File " . fullName . " has been modified.", "&Save\nCa&ncel", 1)
         if (input == 1)
-            silent exec "drop ".name
+            cal <SID>Drop(name)
             exec "w! ".name
         endif
     endif
