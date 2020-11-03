@@ -14,9 +14,9 @@ REQUIREMENTS                                    *dirdiff-requirements*
     tested this on cygwin's version on Windows.  If you have a diff that
     doesn't support -x or -I flag, do not set variable g:DirDiffExcludes and
     g:DirDiffIgnore to "".  It should still work.
-  - On Windows, you need to have "xcopy", "copy", "del", and "rd" in your
+  - On Windows, you need to have "xcopy", "copy", "del" "rd" and "xxd" in your
     path.
-  - On Unix, you need to have "rm" and "cp" in your path.
+  - On Unix, you need to have "rm", "cp" and "xxd" in your path.
 
 INSTALLATION                                    *dirdiff-installation*
 
@@ -92,6 +92,12 @@ The following commands can be used inside the diff window:
                                                 *dirdiff-a*
 <a>                     Sets additional arguments for diff, eg. -w to ignore
                         white space, etc.
+
+                                                *dirdiff-h*
+<h>                     Toggle xxd hex mode on or off.
+
+                                                *dirdiff-w*
+<w>                     Toggle wrap and nowrap mode
 
 <q>                     Quit DirDiff
  
@@ -263,6 +269,7 @@ THANKS                                          *dirdiff-thanks*
 
 HISTORY                                         *dirdiff-history*
 
+1.1.7  - Added support for "hex mode" and "wrap mode"
 1.1.6  - Fixed problem with vim 8.2 where the :drop would not work with
          wildignore.  Added option to set shell.
 1.1.5  - Fixed split windows problems caused by some .vimrc settings.
