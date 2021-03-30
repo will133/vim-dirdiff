@@ -129,6 +129,11 @@ if !exists("g:DirDiffTextOnlyInCenter")
     let g:DirDiffTextOnlyInCenter = ": "
 endif
 
+" Confirm quit operation?
+if !exists("g:DirDiffQuitConfirm")
+    let g:DirDiffQuitConfirm = 1
+endif
+
 " Set some script specific variables:
 "
 let s:DirDiffFirstDiffLine = 6
@@ -338,7 +343,7 @@ endfun
 
 " Quit the DirDiff mode
 function! <SID>DirDiffQuit()
-    let in = confirm ("Are you sure you want to quit DirDiff?", "&Yes\n&No", 2)
+    let in = !g:DirDiffQuitConfirm || confirm ("Are you sure you want to quit DirDiff?", "&Yes\n&No", 2)
     if (in == 1)
         call <SID>SaveDiffWindowsIfModified()
         bd!
