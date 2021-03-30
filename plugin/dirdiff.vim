@@ -15,7 +15,7 @@ command! -nargs=0 DirDiffPrev call <SID>DirDiffPrev ()
 command! -nargs=0 DirDiffUpdate call <SID>DirDiffUpdate ()
 command! -nargs=0 DirDiffQuit call <SID>DirDiffQuit ()
 
-" The following comamnds can be used in the Vim diff mode:
+" The following commands can be used in the Vim diff mode:
 "
 " \dg - Diff get: maps to :diffget<CR>
 " \dp - Diff put: maps to :diffput<CR>
