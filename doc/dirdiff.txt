@@ -100,7 +100,7 @@ The following commands can be used inside the diff window:
 <w>                     Toggle wrap and nowrap mode
 
 <q>                     Quit DirDiff
- 
+
 The following comamnds can be used in the Vim diff mode if this is global flag
 is set to 1 (default to 0): >
 
@@ -108,19 +108,30 @@ is set to 1 (default to 0): >
 <
 
 Note: by default these would not be added, unlike previous version.  It is
-preferable to not change people's mappings by default.
+preferable to not change people's mappings by default. These mappings can be
+overriden by their corresponding variables added to .vimrc.
 
                                                 *dirdiff-leader-dg*
 <Leader>dg              Diff get: maps to :diffget<CR>
-
+>
+    let g:DirDiffGetKeyMap = '<Leader>dg'
+<
                                                 *dirdiff-leader-dp*
 <Leader>dp              Diff put: maps to :diffput<CR>
-
+>
+    let g:DirDiffPutKeyMap = '<Leader>dp'
+<
                                                 *dirdiff-leader-dj*
-<Leader>dj              Diff next: (think j for down) 
+<Leader>dj              Diff next: (think j for down)
+>
+    let g:DirDiffNextKeyMap = '<Leader>dj'
+<
 
                                                 *dirdiff-leader-dk*
 <Leader>dk              Diff previous: (think k for up)
+>
+    let g:DirDiffPrevKeyMap = '<Leader>dk'
+<
 
 
 OPTIONS                                         *dirdiff-options*
@@ -223,7 +234,7 @@ For example, you can set these in your .vimrc file: >
     let g:DirDiffExcludes = "CVS,*.class,*.o"
     let g:DirDiffIgnore = "Id:"
     " ignore white space in diff
-    let g:DirDiffAddArgs = "-w" 
+    let g:DirDiffAddArgs = "-w"
     let g:DirDiffEnableMappings = 1
 <
 
@@ -294,10 +305,10 @@ HISTORY                                         *dirdiff-history*
        exclude and ignore pattern.
 0.91 - Clean up delete routine.
      - Added interactive mode.
-     - Added multiple entries of exclude and ignore pattern.  
+     - Added multiple entries of exclude and ignore pattern.
      - Custom configuration through global variables.
      - Change exclude and ignore patterns on the fly.
-      
+
 0.9  - Reorganization of the interface.  Much simplier dialog for
        synchronization.  Support for range synchronization option (REALLY
        powerful)
