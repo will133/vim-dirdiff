@@ -263,7 +263,7 @@ function! <SID>DirDiff(srcA, srcB)
     " We then put the file [A] and [B] on top of the diff lines
     call append(0, "[A]=". DirDiffAbsSrcA)
     call append(1, "[B]=". DirDiffAbsSrcB)
-    if g:DirDiffEnableMappings
+    if get(g:, 'DirDiffEnableMappings', 0)
         call append(2, "Usage:   <Enter>/'o'=open,'s'=sync,'<Leader>dg'=diffget,'<Leader>dp'=diffput,'<Leader>dj'=next,'<Leader>dk'=prev, 'q'=quit")
     else
         call append(2, "Usage:   <Enter>/'o'=open,'s'=sync,'q'=quit")
