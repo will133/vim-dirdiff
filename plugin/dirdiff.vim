@@ -129,6 +129,11 @@ if !exists("g:DirDiffTextOnlyInCenter")
     let g:DirDiffTextOnlyInCenter = ": "
 endif
 
+" Verbose syncing operations.
+if !exists("g:DirDiffVerboseSync")
+    let g:DirDiffVerboseSync = 1
+endif
+
 " Set some script specific variables:
 "
 let s:DirDiffFirstDiffLine = 6
@@ -812,7 +817,9 @@ endfunction
 function! <SID>Copy(fileFromOrig, fileToOrig)
     let fileFrom = substitute(a:fileFromOrig, '/', s:sep, 'g')
     let fileTo = substitute(a:fileToOrig, '/', s:sep, 'g')
-    echo "Copy from " . fileFrom . " to " . fileTo
+    if g:DirDiffVerboseSync
+        echo "Copy from " . fileFrom . " to " . fileTo
+    endif
     if (s:DirDiffCopyCmd == "")
         echo "Copy not supported on this platform"
         return 1
@@ -883,7 +890,9 @@ endfunction
 " otherwise.
 function! <SID>Delete(fileFromOrig)
     let fileFrom = substitute(a:fileFromOrig, '/', s:sep, 'g')
-    echo "Deleting from " . fileFrom
+    if g:DirDiffVerboseSync
+        echo "Deleting from " . fileFrom
+    endif
     if (s:DirDiffDeleteCmd == "")
         echo "Delete not supported on this platform"
         return 1
