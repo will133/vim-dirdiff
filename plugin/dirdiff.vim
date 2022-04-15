@@ -639,6 +639,7 @@ function! <SID>GetBaseDir(diffName)
 endfunction
 
 function! <SID>DirDiffNext()
+    let t_winid = win_getid()
     " If the current window is a diff, go down one
     call <SID>GotoDiffWindow()
     " if the current line is <= 6, (within the header range), we go to the
@@ -649,13 +650,16 @@ function! <SID>DirDiffNext()
     endif
     silent! exe (b:currentDiff + 1)
     call <SID>DirDiffOpen()
+    call win_gotoid(t_winid)
 endfunction
 
 function! <SID>DirDiffPrev()
+    let t_winid = win_getid()
     " If the current window is a diff, go down one
     call <SID>GotoDiffWindow()
     silent! exe (b:currentDiff - 1)
     call <SID>DirDiffOpen()
+    call win_gotoid(t_winid)
 endfunction
 
 " For each line, we can perform a recursive copy or delete to sync up the
