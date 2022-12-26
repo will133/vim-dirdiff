@@ -234,6 +234,7 @@ function! <SID>DirDiff(srcA, srcB)
         return
     endif
     silent exe "edit ".s:FilenameDiffWindow
+    let b:dirdiff = 1
     echo "Defining [A] and [B] ... "
     " We then do a substitution on the directory path
     " We need to do substitution of the the LONGER string first, otherwise
@@ -530,17 +531,20 @@ function! <SID>DirDiffOpen()
             if s:LastMode == 2
                 call <SID>Drop(previousFileA)
                 silent exec "edit ".s:FilenameA
+                let b:dirdiff = 1
                 diffthis
                 silent exec "bd ".bufnr(previousFileA)
 
                 call <SID>Drop(previousFileB)
                 silent exec "edit ".s:FilenameB
+                let b:dirdiff = 1
                 diffthis
                 silent exec "bd ".bufnr(previousFileB)
             else
                 let previousFile = (s:LastMode == "A") ? previousFileA : previousFileB
                 call <SID>Drop(previousFile)
                 silent exec "edit ".s:FilenameB
+                let b:dirdiff = 1
                 silent exec "bd ".bufnr(previousFile)
                 diffthis
 
@@ -550,9 +554,11 @@ function! <SID>DirDiffOpen()
         else
             "Open the diff windows
             silent exec "split ".s:FilenameB
+            let b:dirdiff = 1
 
             " To ensure that A is on the left and B on the right, splitright must be off
             silent exec "leftabove vert diffsplit ".s:FilenameA
+            let b:dirdiff = 1
         endif
 
         " Go back to the diff window
