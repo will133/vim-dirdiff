@@ -22,7 +22,7 @@ With Vim 8+'s default packaging system:
 
     mkdir -p ~/.vim/pack/bundle/start
     cd ~/.vim/pack/bundle/start
-    git clone git://github.com/will133/vim-dirdiff
+    git clone https://github.com/will133/vim-dirdiff
 
 
 ## Usage
