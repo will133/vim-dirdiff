@@ -470,6 +470,17 @@ function! <SID>DirDiffOpen()
         return
     endif
 
+    let line = getline(".")
+    let mode = 0
+    if <SID>IsDiffer(line)
+      let mode = 2
+    elseif <SID>IsOnly(line)
+      let mode = 1
+    else
+        echo "There is no diff at the current line! "
+        return
+    endif
+
     " First dehighlight the last marked line
     call <SID>DeHighlightLine()
 
@@ -479,7 +490,6 @@ function! <SID>DirDiffOpen()
     " Change back to the right window
     call <SID>GotoDiffWindow()
 
-    let line = getline(".")
     let b:currentDiff = line(".")
 
     let previousFileA = exists("s:FilenameA") ? s:FilenameA : ""
@@ -492,7 +502,7 @@ function! <SID>DirDiffOpen()
     let s:FilenameA = <SID>EscapeFileName(fileA)
     let s:FilenameB = <SID>EscapeFileName(fileB)
 
-    if <SID>IsOnly(line)
+    if mode == 1
         " We open the file
         let fileSrc = <SID>ParseOnlySrc(line)
         if (fileSrc == "A")
@@ -524,8 +534,7 @@ function! <SID>DirDiffOpen()
         exe("resize " . g:DirDiffWindowSize)
         exe (b:currentDiff)
         let s:LastMode = fileSrc
-    elseif <SID>IsDiffer(line)
-
+    elseif mode == 2
         if exists("s:LastMode")
             if s:LastMode == 2
                 call <SID>Drop(previousFileA)
@@ -564,7 +573,7 @@ function! <SID>DirDiffOpen()
         exe ("normal z.")
         let s:LastMode = 2
     else
-        echo "There is no diff at the current line!"
+        echo "should not happen"
     endif
 endfunction
 
