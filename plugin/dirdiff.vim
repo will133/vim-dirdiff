@@ -213,7 +213,7 @@ function! <SID>DirDiff(srcA, srcB)
         let cmdarg = cmdarg." -i"
     endif
     if (g:DirDiffAddArgs != "")
-        let cmdarg = cmdarg." ".g:DirDiffAddArgs." "
+        let cmdarg = cmdarg." ".g:DirDiffAddArgs
     endif
     if (g:DirDiffExcludes != "")
         let cmdarg = cmdarg.' -x"'.substitute(g:DirDiffExcludes, ',', '" -x"', 'g').'"'
@@ -784,7 +784,11 @@ function! <SID>GetFileNameFromLine(AB, line)
     elseif <SID>IsDiffer(a:line)
         let regex = '^.*' . s:DirDiffDifferLine . '\[A\]\(.*\)' . s:DirDiffDifferAndLine . '\[B\]\(.*\)' . s:DirDiffDifferEndLine . '.*$'
         let fileToProcess = substitute(a:line, regex, '\1', '')
-    else
+        if fileToProcess == a:line
+            " Didn't match, try filename in apostrophes
+            let regex = '^.*' . s:DirDiffDifferLine . "'\\[A\\]\\(.*\\)'" . s:DirDiffDifferAndLine . "'\\[B\\]\\(.*\\)'" . s:DirDiffDifferEndLine . '.*$'
+            let fileToProcess = substitute(a:line, regex, '\1', '')
+        endif
     endif
 
     "echo "line : " . a:line. "AB = " . a:AB . " File to Process " . fileToProcess
@@ -799,12 +803,22 @@ endfunction
 
 "Returns the source (A or B) of the "Only" line
 function! <SID>ParseOnlySrc(line)
-    return substitute(a:line, '^.*' . s:DirDiffDiffOnlyLine . '\[\(.\)\].*' . s:DirDiffDiffOnlyLineCenter . '.*', '\1', '')
+    let result = substitute(a:line, '^.*' . s:DirDiffDiffOnlyLine . '\[\(.\)\].*' . s:DirDiffDiffOnlyLineCenter . '.*', '\1', '')
+    if (result == a:line)
+        " Didn't match, try filename in apostrophes
+        let result = substitute(a:line, '^.*' . s:DirDiffDiffOnlyLine . "'\\[\\(.\\)\\]'.*" . s:DirDiffDiffOnlyLineCenter . '.*', '\1', '')
+    endif
+    return result
 endfunction
 
 function! <SID>ParseOnlyFile(line)
     let regex = '^.*' . s:DirDiffDiffOnlyLine . '\[.\]\(.*\)' . s:DirDiffDiffOnlyLineCenter . '\(.*\)'
     let root = substitute(a:line, regex , '\1', '')
+    if (root == a:line)
+        " Didn't match, try filename in apostrophes
+        let regex = '^.*' . s:DirDiffDiffOnlyLine . "'\\[.\\]'\\(.*\\)" . s:DirDiffDiffOnlyLineCenter . "\\(.*\\)"
+        let root = substitute(a:line, regex , '\1', '')
+    endif
     let file = root . s:sep . substitute(a:line, regex , '\2', '')
     return file
 endfunction
