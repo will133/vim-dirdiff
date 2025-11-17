@@ -414,21 +414,31 @@ function <SID>ToggleHex()
 endfunction
 
 function! <SID>DirDiffHexmode()
-    wincmd k
-    call <SID>ToggleHex()
-    wincmd l
-    call <SID>ToggleHex()
+    " Support hex mode only for existing files (not directories).
+    if filereadable(s:FilenameA)
+        call <SID>GotoFileAWindow()
+        call <SID>ToggleHex()
+    endif
+    if filereadable(s:FilenameB)
+        call <SID>GotoFileBWindow()
+        call <SID>ToggleHex()
+    endif
     " Go back to the diff window
-    wincmd j
+    call <SID>GotoDiffWindow()
 endfunction
 
 function! <SID>DirDiffWrapmode()
-    wincmd k
-    setlocal wrap!
-    wincmd l
-    setlocal wrap!
+    " Support wrap mode only for existing files (not directories).
+    if filereadable(s:FilenameA)
+        call <SID>GotoFileAWindow()
+        setlocal wrap!
+    endif
+    if filereadable(s:FilenameB)
+        call <SID>GotoFileBWindow()
+        setlocal wrap!
+    endif
     " Go back to the diff window
-    wincmd j
+    call <SID>GotoDiffWindow()
 endfunction
 
 function! <SID>EscapeFileName(path)
@@ -455,8 +465,28 @@ function! <SID>Drop(fname)
     if winid > 0
         call win_gotoid(winid)
     else
-        exe 'edit ' a:fname
+        " If the Netrw plugin is configured in tree style listing mode
+        " (i.e. g:netrw_liststyle = 3), then a buffer named 'NetrwTreeListing'
+        " is shown (i.e. active window). This happens only after the original
+        " buffer, which has the directory as its name, is focused for the first
+        " time. We work around this by comparing the 'netrw_curdir' variable of
+        " the 'NetrwTreeListing' buffer against the directory name.
+        let netrw_buffer = bufnr("NetrwTreeListing")
+        let netrw_winid = bufwinid(netrw_buffer)
+        if netrw_winid > 0 && a:fname == getbufvar(netrw_buffer, "netrw_curdir")
+            call win_gotoid(netrw_winid)
+        else
+            exe 'edit ' a:fname
+        endif
     endif
+endfunction
+
+function! <SID>GotoFileAWindow()
+    call <SID>Drop(s:FilenameA)
+endfunction
+
+function! <SID>GotoFileBWindow()
+    call <SID>Drop(s:FilenameB)
 endfunction
 
 function! <SID>GotoDiffWindow()
@@ -511,7 +541,11 @@ function! <SID>DirDiffOpen()
                 let previousFile = (s:LastMode == "A") ? previousFileA : previousFileB
                 call <SID>Drop(previousFile)
                 silent exec "edit ".fileToOpen
-                silent exec "bd ".bufnr(previousFile)
+                " The Netrw plugin creates an 'unlisted' buffer for directories.
+                " Running 'bd {buffer}' on an unlisted buffer produces the following error:
+                " E516: No buffers were deleted.
+                " Suppress the error with 'silent!'.
+                silent! exec "bd ".bufnr(previousFile)
             endif
         else
             silent exec "split ".fileToOpen
@@ -541,7 +575,11 @@ function! <SID>DirDiffOpen()
                 let previousFile = (s:LastMode == "A") ? previousFileA : previousFileB
                 call <SID>Drop(previousFile)
                 silent exec "edit ".s:FilenameB
-                silent exec "bd ".bufnr(previousFile)
+                " The Netrw plugin creates an 'unlisted' buffer for directories.
+                " Running 'bd {buffer}' on an unlisted buffer produces the following error:
+                " E516: No buffers were deleted.
+                " Suppress the error with 'silent!'.
+                silent! exec "bd ".bufnr(previousFile)
                 diffthis
 
                 " To ensure that A is on the left and B on the right, splitright must be off
