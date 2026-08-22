@@ -451,11 +451,17 @@ function! <SID>Drop(fname)
     " We need to replace the :drop implementation due to this issue:
     " https://github.com/vim/vim/issues/1503.  Thus if wideignore is set the
     " command would no work.  This is intended to work around that issue
+    "
+    " a:fname must be the raw, unescaped filename: bufwinid() matches
+    " against the real buffer name, so an Ex-command-escaped string (as
+    " produced by EscapeFileName()) would never match and always fall
+    " through to the exe branch below. Escape only there, where the value
+    " is actually used on an Ex command line.
     let winid = bufwinid(a:fname)
     if winid > 0
         call win_gotoid(winid)
     else
-        exe 'edit ' a:fname
+        exe 'edit ' . <SID>EscapeFileName(a:fname)
     endif
 endfunction
 
@@ -482,13 +488,18 @@ function! <SID>DirDiffOpen()
     let line = getline(".")
     let b:currentDiff = line(".")
 
-    let previousFileA = exists("s:FilenameA") ? s:FilenameA : ""
-    let previousFileB = exists("s:FilenameB") ? s:FilenameB : ""
+    " previousFileA/B must stay raw (unescaped): they're only ever used as
+    " bufnr()/Drop() buffer-name lookups below, which match against the
+    " real buffer name, not an Ex-command-escaped string.
+    let previousFileA = exists("s:RawFilenameA") ? s:RawFilenameA : ""
+    let previousFileB = exists("s:RawFilenameB") ? s:RawFilenameB : ""
 
     " Parse the line and see whether it's a "Only in" or "Files Differ"
     call <SID>HighlightLine()
     let fileA = <SID>GetFileNameFromLine("A", line)
     let fileB = <SID>GetFileNameFromLine("B", line)
+    let s:RawFilenameA = fileA
+    let s:RawFilenameB = fileB
     let s:FilenameA = <SID>EscapeFileName(fileA)
     let s:FilenameB = <SID>EscapeFileName(fileB)
 
