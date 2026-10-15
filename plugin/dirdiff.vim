@@ -188,8 +188,18 @@ endif
 
 function! <SID>DirDiff(srcA, srcB)
     " Setup
-    let DirDiffAbsSrcA = fnamemodify(expand(a:srcA, ":p"), ":p")
-    let DirDiffAbsSrcB = fnamemodify(expand(a:srcB, ":p"), ":p")
+    " On Windows, Vim's <f-args>/command argument parsing collapses a
+    " leading "\\" into a single "\" (eg. when the user types a UNC path
+    " such as \\server\share\dir to the :DirDiff command).  This silently
+    " turns a UNC path into a drive-relative path, which fnamemodify()
+    " resolves by prepending the current working directory, producing a
+    " bogus concatenated path and an empty diff.  Restore the doubled
+    " leading backslash before resolving the path.  This is idempotent:
+    " a path that already starts with "\\" is left untouched.
+    let srcA = (has("win32") && a:srcA =~ '^\\[^\\]') ? '\'.a:srcA : a:srcA
+    let srcB = (has("win32") && a:srcB =~ '^\\[^\\]') ? '\'.a:srcB : a:srcB
+    let DirDiffAbsSrcA = fnamemodify(expand(srcA, ":p"), ":p")
+    let DirDiffAbsSrcB = fnamemodify(expand(srcB, ":p"), ":p")
     " Check for an internationalized version of diff ?
     call <SID>GetDiffStrings()
 
